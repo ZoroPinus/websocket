@@ -1,0 +1,107 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum DocumentType {
+  PDF
+  Docx
+  PNG
+  JPEG
+  XLSX
+}
+
+model User {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String?   @unique
+  email     String?   @unique
+  image     String?
+  password  String?
+  gender    String?
+  address   String?
+  phone     String?
+  sensors   Sensor[]
+  age       Int?
+  role      UserRole  @default(USER)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at")
+  contacts  Contact[]
+  latitude  Float?
+  longitude Float?
+}
+
+model Contact {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  phone     String?
+  address   String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @db.ObjectId
+}
+
+model LastReading {
+  id               String @id @default(auto()) @map("_id") @db.ObjectId
+  gasConcentration Float
+  smokeLevel       Float
+  sensor           Sensor @relation(fields: [sensorId], references: [id])
+  sensorId         String @unique @db.ObjectId
+}
+
+model Sensor {
+  id            String       @id @map("_id") @db.ObjectId
+  sensorName    String
+  status        String
+  location      String
+  lastReading   LastReading?
+  lastReadingId String?
+  user          User         @relation(fields: [id], references: [id])
+  userId        String       @db.ObjectId
+}
+
+model Alert {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userID         String   @db.ObjectId
+  sensorID       String   @db.ObjectId
+  timestamp      DateTime @default(now())
+  type           String
+  status         String
+  description    String
+  additionalInfo String?
+}
+
+// Define the FireDepartment model
+model FireDepartment {
+  id             String          @id @default(auto()) @map("_id") @db.ObjectId
+  deptName       String
+  contactInfo    String
+  assignedAlerts AssignedAlert[]
+}
+
+// Define the AssignedAlert model
+model AssignedAlert {
+  id               String          @id @default(auto()) @map("_id") @db.ObjectId
+  alertID          String          @db.ObjectId
+  assignedTo       String
+  timestamp        DateTime        @default(now())
+  status           String
+  notes            String?
+  FireDepartment   FireDepartment? @relation(fields: [fireDepartmentId], references: [id])
+  fireDepartmentId String?         @db.ObjectId
+}
