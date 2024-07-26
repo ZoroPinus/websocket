@@ -60,7 +60,7 @@ const checkSmokeConcentration = async () => {
       });
 
       if (lastReading) {
-        io.to(socketId).emit("smokeLevel", lastReading.smokeLevel);
+        io.to(socketId).emit("smokeConcentration", lastReading.smokeConcentration);
       }
     } catch (error) {
       console.error("Error fetching smoke level for interval check:", error);
