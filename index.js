@@ -70,7 +70,7 @@ const checkSmokeConcentration = async () => {
 };
 
 // Set interval to check smoke levels every 10 seconds (10000 ms)
-setInterval(checkSmokeConcentrations, 3000);
+setInterval(checkSmokeConcentration, 3000);
 
 server.listen(8080, () => {
   console.log("server running at http://localhost:8080");
