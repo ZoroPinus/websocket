@@ -18,31 +18,24 @@ enum UserRole {
   USER
 }
 
-enum DocumentType {
-  PDF
-  Docx
-  PNG
-  JPEG
-  XLSX
-}
-
 model User {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  name      String?   @unique
-  email     String?   @unique
-  image     String?
-  password  String?
-  gender    String?
-  address   String?
-  phone     String?
-  sensors   Sensor[]
-  age       Int?
-  role      UserRole  @default(USER)
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at")
-  contacts  Contact[]
-  latitude  Float?
-  longitude Float?
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  name          String?   @unique
+  username      String?   @unique
+  image         String?
+  password      String?
+  gender        String?
+  address       String?
+  emailVerified DateTime
+  phone         String?
+  sensors       Sensor[]
+  age           Int?
+  role          UserRole  @default(USER)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at")
+  contacts      Contact[]
+  latitude      Float?
+  longitude     Float?
 }
 
 model Contact {
@@ -57,17 +50,19 @@ model Contact {
 }
 
 model LastReading {
-  id               String @id @default(auto()) @map("_id") @db.ObjectId
-  gasConcentration Float
-  smokeLevel       Float
-  sensor           Sensor @relation(fields: [sensorId], references: [id])
-  sensorId         String @unique @db.ObjectId
+  id                 String @id @default(auto()) @map("_id") @db.ObjectId
+  lpg                Float
+  co                 Float
+  smokeConsentration Float
+  sensor             Sensor @relation(fields: [sensorId], references: [id])
+  sensorId           String @unique @db.ObjectId
 }
 
 model Sensor {
   id            String       @id @map("_id") @db.ObjectId
   sensorName    String
-  status        String
+  active        Boolean
+  registered    Boolean
   location      String
   lastReading   LastReading?
   lastReadingId String?
